@@ -101,6 +101,20 @@ to hand `modal.images.fromId(...)` when creating a sandbox — see `plans/01-san
 
 Needs `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET` set as repo secrets to run.
 
+### Trying the built image locally
+
+`scripts/demo-sandbox.ts` boots a real sandbox from the `imageId` in `image.json`, starts
+`npm run dev` inside it, and prints a public tunnel URL — useful for confirming a published image
+actually works before wiring it into the main app.
+
+```bash
+export MODAL_TOKEN_ID=ak-...
+export MODAL_TOKEN_SECRET=as-...
+npm run demo:sandbox
+```
+
+Ctrl+C terminates the sandbox; otherwise it auto-terminates after 15 minutes.
+
 ## What's intentionally not here yet
 
 - `src/lib/__builder__/*` — the dev-only console/network capture bridge and the visual-edit

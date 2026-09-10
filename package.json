@@ -14,7 +14,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "build:modal-image": "tsx scripts/build-modal-image.ts"
+    "build:modal-image": "tsx scripts/build-modal-image.ts",
+    "demo:sandbox": "tsx scripts/demo-sandbox.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
