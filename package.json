@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 3000",
+    "dev": "vite dev --port 3000 --host 0.0.0.0",
     "build": "vite build",
     "build:cloudflare": "NITRO_PRESET=cloudflare-module vite build",
     "deploy:cloudflare": "npm run build:cloudflare && wrangler deploy --config .output/server/wrangler.json",

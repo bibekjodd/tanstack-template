@@ -50,7 +50,22 @@ process.on('SIGTERM', () => void cleanup().then(() => process.exit(0)));
 
 try {
   console.log('Starting dev server...');
-  await sb.exec(['bash', '-lc', 'npm run dev']);
+  const devProcess = await sb.exec(['bash', '-lc', 'npm run dev'], {
+    stdout: 'pipe',
+    stderr: 'pipe'
+  });
+
+  const pipe = (stream: typeof devProcess.stdout, out: NodeJS.WriteStream) =>
+    void (async () => {
+      const reader = stream.getReader();
+      while (true) {
+        const { value, done } = await reader.read();
+        if (value) out.write(`[dev] ${value}`);
+        if (done) break;
+      }
+    })();
+  pipe(devProcess.stdout, process.stdout);
+  pipe(devProcess.stderr, process.stderr);
 
   const tunnel = (await sb.tunnels())[PORT];
   if (!tunnel) throw new Error(`No tunnel for port ${PORT}`);
