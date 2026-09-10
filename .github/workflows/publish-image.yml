@@ -1,0 +1,36 @@
+name: Publish Modal Image
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build:modal-image
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          TEMPLATE_REPO_URL: https://github.com/${{ github.repository }}.git
+      - name: Commit image.json to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add image.json
+          git diff --staged --quiet && echo "No change" && exit 0
+          git commit -m "chore: publish Modal image for ${{ github.ref_name }}"
+          git push origin HEAD:main
