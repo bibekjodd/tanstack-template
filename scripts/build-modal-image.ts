@@ -13,7 +13,8 @@ const app = await modal.apps.fromName('tanstack-start-template', { createIfMissi
 const image = modal.images
   .fromRegistry('node:22-slim')
   .dockerfileCommands([
-    'RUN apt-get update && apt-get install -y --no-install-recommends git ' +
+    'RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates ' +
+      '&& update-ca-certificates ' +
       '&& rm -rf /var/lib/apt/lists/*'
   ])
   .dockerfileCommands([
