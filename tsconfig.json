@@ -22,6 +22,6 @@
     },
     "types": ["vite/client"]
   },
-  "include": ["src", "vite.config.ts", "scripts"],
+  "include": ["src", "vite.config.ts", "scripts", "plugins"],
   "exclude": ["node_modules", ".output", "dist"]
 }
