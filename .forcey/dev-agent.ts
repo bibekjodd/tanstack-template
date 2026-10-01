@@ -5,6 +5,7 @@
 // credentials, and sends them to the dev server (same origin) so the code agent can read what
 // the user saw. It also tells the editor frame about HMR state over postMessage. Console calls
 // always reach the original methods: nothing the app logs is swallowed.
+import { createPicker } from './picker';
 
 type AgentEvent = {
   kind: 'console' | 'error' | 'network';
@@ -228,11 +229,21 @@ const start = () => {
     );
   }
 
+  const picker = createPicker({
+    onSelect: (selection) => toEditor('forcey:picker-select', { selection }),
+    onCancel: () => {
+      picker.disable();
+      toEditor('forcey:picker-cancel', {});
+    }
+  });
+
   window.addEventListener('message', (event) => {
     if (!editorOrigin || event.origin !== editorOrigin) return;
     const data = event.data as { v?: number; type?: string } | null;
     if (data?.v !== PROTOCOL_VERSION) return;
     if (data.type === 'forcey:ping') toEditor('forcey:ready', { url: window.location.href });
+    if (data.type === 'forcey:picker-enable') picker.enable();
+    if (data.type === 'forcey:picker-disable') picker.disable();
     if (data.type === 'forcey:reload') window.location.reload();
   });
 

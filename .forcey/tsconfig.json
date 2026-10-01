@@ -1,4 +1,10 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["./forcey-dev.ts", "./dev-agent.ts", "./vite.config.ts"]
+  "include": [
+    "./forcey-dev.ts",
+    "./dev-agent.ts",
+    "./forcey-tagger.ts",
+    "./picker.ts",
+    "./vite.config.ts"
+  ]
 }

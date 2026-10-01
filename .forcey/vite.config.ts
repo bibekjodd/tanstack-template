@@ -5,11 +5,19 @@
 import { defineConfig, mergeConfig, type ConfigEnv, type UserConfig } from 'vite';
 import projectConfig from '../vite.config';
 import { forceyDev } from './forcey-dev';
+import { forceyTagger } from './forcey-tagger';
 
 type ProjectConfig = UserConfig | ((env: ConfigEnv) => UserConfig | Promise<UserConfig>);
 
 export default defineConfig(async (env) => {
   const config = projectConfig as ProjectConfig;
   const base = typeof config === 'function' ? await config(env) : config;
-  return mergeConfig(base, { plugins: [forceyDev()] });
+  // The tagger goes first so no other transform (notably the router's route splitter) has moved
+  // a line before it records where each element is.
+  return mergeConfig(
+    { ...base, plugins: [forceyTagger(), ...(base.plugins ?? [])] },
+    {
+      plugins: [forceyDev()]
+    }
+  );
 });
