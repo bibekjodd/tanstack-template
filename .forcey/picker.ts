@@ -22,6 +22,37 @@ const BLOCKED_EVENTS = [
   'submit'
 ];
 const MAX_CLASSES = 40;
+// The computed properties the editor's panel shows, grouped there by kind.
+const TRACKED_STYLES = [
+  'display',
+  'position',
+  'width',
+  'height',
+  'margin-top',
+  'margin-right',
+  'margin-bottom',
+  'margin-left',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'gap',
+  'flex-direction',
+  'justify-content',
+  'align-items',
+  'color',
+  'background-color',
+  'border-top-width',
+  'border-top-color',
+  'border-top-left-radius',
+  'opacity',
+  'font-family',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'letter-spacing',
+  'text-align'
+] as const;
 
 export type PickerSource = { file: string; line: number; column: number };
 
@@ -29,6 +60,7 @@ export type PickerSelection = {
   source: PickerSource;
   tag: string;
   classes: string[];
+  computed: Record<string, string>;
   rect: { top: number; left: number; width: number; height: number };
   // How many nodes on the page come from this one JSX location (a .map() renders many).
   instances: number;
@@ -99,10 +131,14 @@ export const createPicker = (callbacks: {
     const source = id ? parseSource(id) : null;
     if (!node || !id || !source) return;
     const rect = node.getBoundingClientRect();
+    const style = getComputedStyle(node);
     callbacks.onSelect({
       source,
       tag: node.tagName.toLowerCase(),
       classes: [...node.classList].slice(0, MAX_CLASSES),
+      computed: Object.fromEntries(
+        TRACKED_STYLES.map((name) => [name, style.getPropertyValue(name)])
+      ),
       rect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
       instances: document.querySelectorAll(`[${SOURCE_ATTRIBUTE}="${CSS.escape(id)}"]`).length
     });
