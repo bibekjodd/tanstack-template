@@ -220,7 +220,11 @@ const start = () => {
   // HMR state for the editor's "applying / failed / ready" indicator.
   if (import.meta.hot) {
     import.meta.hot.on('vite:beforeUpdate', () => toEditor('forcey:hmr', { state: 'pending' }));
-    import.meta.hot.on('vite:afterUpdate', () => toEditor('forcey:hmr', { state: 'applied' }));
+    import.meta.hot.on('vite:afterUpdate', () => {
+      // The recompiled classes are the truth now; drop the optimistic inline styles.
+      picker.clearPreview();
+      toEditor('forcey:hmr', { state: 'applied' });
+    });
     import.meta.hot.on('vite:error', (payload: { err?: { message?: string } }) =>
       toEditor('forcey:hmr', {
         state: 'error',
@@ -244,6 +248,12 @@ const start = () => {
     if (data.type === 'forcey:ping') toEditor('forcey:ready', { url: window.location.href });
     if (data.type === 'forcey:picker-enable') picker.enable();
     if (data.type === 'forcey:picker-disable') picker.disable();
+    if (data.type === 'forcey:preview-style') {
+      const { id, styles } = data as { id?: unknown; styles?: unknown };
+      if (typeof id === 'string' && styles && typeof styles === 'object')
+        picker.previewStyle(id, styles as Record<string, string>);
+    }
+    if (data.type === 'forcey:preview-clear') picker.clearPreview();
     if (data.type === 'forcey:reload') window.location.reload();
   });
 

@@ -205,5 +205,35 @@ export const createPicker = (callbacks: {
     hovered = null;
   };
 
-  return { enable, disable };
+  // Optimistic styling (plans/08 step 6): the editor sends the CSS a pending class edit will
+  // produce, and it is applied as inline style on every node rendered from that source
+  // location, so the user sees the change before the file is written and Vite has recompiled.
+  // Inline styles are removed again when HMR delivers the real classes (or the edit fails).
+  const previewed = new Map<HTMLElement, Map<string, string>>();
+
+  const previewStyle = (id: string, styles: Record<string, string>) => {
+    for (const node of document.querySelectorAll<HTMLElement>(
+      `[${SOURCE_ATTRIBUTE}="${CSS.escape(id)}"]`
+    )) {
+      const originals = previewed.get(node) ?? new Map<string, string>();
+      for (const [property, value] of Object.entries(styles)) {
+        if (!originals.has(property))
+          originals.set(property, node.style.getPropertyValue(property));
+        node.style.setProperty(property, value);
+      }
+      previewed.set(node, originals);
+    }
+  };
+
+  const clearPreview = () => {
+    for (const [node, originals] of previewed) {
+      for (const [property, original] of originals) {
+        if (original) node.style.setProperty(property, original);
+        else node.style.removeProperty(property);
+      }
+    }
+    previewed.clear();
+  };
+
+  return { enable, disable, previewStyle, clearPreview };
 };
