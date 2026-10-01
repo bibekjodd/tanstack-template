@@ -61,9 +61,19 @@ export type PickerSelection = {
   tag: string;
   classes: string[];
   computed: Record<string, string>;
+  // The element's own text when it holds nothing but text; null when it has child elements.
+  text: string | null;
   rect: { top: number; left: number; width: number; height: number };
   // How many nodes on the page come from this one JSX location (a .map() renders many).
   instances: number;
+};
+
+// Text is editable only where the DOM shows a single run of text; the editor still checks the
+// source, since `{title}` renders as text too.
+const ownText = (node: Element): string | null => {
+  if (node.childNodes.length === 0) return null;
+  for (const child of node.childNodes) if (child.nodeType !== Node.TEXT_NODE) return null;
+  return node.textContent;
 };
 
 export const parseSource = (id: string): PickerSource | null => {
@@ -135,6 +145,7 @@ export const createPicker = (callbacks: {
     callbacks.onSelect({
       source,
       tag: node.tagName.toLowerCase(),
+      text: ownText(node),
       classes: [...node.classList].slice(0, MAX_CLASSES),
       computed: Object.fromEntries(
         TRACKED_STYLES.map((name) => [name, style.getPropertyValue(name)])
