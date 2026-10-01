@@ -17,4 +17,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run typecheck
+      - name: Typecheck .forcey (platform dev tooling)
+        run: npx tsc -p .forcey --noEmit
       - run: npm run lint

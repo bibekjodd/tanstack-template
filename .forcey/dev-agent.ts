@@ -1,5 +1,5 @@
-// Dev-only browser agent for the Forcey Magic editor. Loaded by plugins/forcey-dev.ts in
-// development only; it is not imported by any app file and never ships in a production build.
+// Dev-only browser agent for the Forcey Magic editor. Loaded by .forcey/forcey-dev.ts in a
+// sandbox only; no project file imports it and it never ships in a production build.
 //
 // Captures console output, uncaught errors, unhandled rejections and failed requests, redacts
 // credentials, and sends them to the dev server (same origin) so the code agent can read what

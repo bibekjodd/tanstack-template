@@ -1,12 +1,15 @@
 // Dev-only runtime capture for the Forcey Magic editor (plans/07 in the platform monorepo).
+// Platform code, not project code: it lives in .forcey/, which the platform never syncs into a
+// project, exports or deploys, and is loaded only by .forcey/vite.config.ts in a sandbox.
 //
-// The in-browser agent (src/lib/__forcey/dev-agent.ts) posts console output, uncaught errors,
+// The in-browser agent (.forcey/dev-agent.ts) posts console output, uncaught errors,
 // rejections and failed requests to this dev server, same-origin. This plugin also records what
 // only the server sees: compile errors (Vite's error payloads) and server-side console errors
 // (SSR). Everything is source-mapped, deduplicated and kept in bounded ring buffers, and
 // GET /__forcey/events returns the current snapshot. It is inert in production builds
 // (`apply: 'serve'`) and never writes to disk.
 import { posix } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SourceMapConsumer, type RawSourceMap } from 'source-map-js';
 import type { Connect, Plugin, ViteDevServer } from 'vite';
 
@@ -30,7 +33,9 @@ const MAX_BODY_BYTES = 256 * 1024;
 const MAX_MESSAGE_CHARS = 2000;
 const MAX_STACK_CHARS = 4000;
 const ENDPOINT = '/__forcey/events';
-const AGENT_MODULE = '/src/lib/__forcey/dev-agent.ts';
+// The browser agent, resolved from this directory so no project file has to reference it.
+const AGENT_ID = 'virtual:forcey-dev-agent';
+const AGENT_FILE = fileURLToPath(new URL('./dev-agent.ts', import.meta.url));
 
 const clip = (text: string, max: number) => (text.length > max ? `${text.slice(0, max)}…` : text);
 
@@ -274,9 +279,13 @@ export function forceyDev(): Plugin {
 
     // Loads the browser agent without touching any file the code agent edits. Appended, so no
     // existing line moves and the module's source map stays exact.
+    resolveId(id) {
+      return id === AGENT_ID ? AGENT_FILE : null;
+    },
+
     transform(code, id, options) {
       if (options?.ssr || !id.endsWith('/src/router.tsx')) return null;
-      return { code: `${code}\nimport '${AGENT_MODULE}';\n`, map: null };
+      return { code: `${code}\nimport '${AGENT_ID}';\n`, map: null };
     }
   };
 }
