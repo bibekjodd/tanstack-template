@@ -182,6 +182,115 @@ export function forceyDev(): Plugin {
 
       // Compile errors: Vite reports them to the browser as `error` payloads, and a later
       // `update` / `full-reload` means the module compiled again.
+      // A compile error during a server render (no browser open, e.g. a headless check) never
+      // reaches the browser channel; Vite reports it through its logger, with the module id and
+      // location attached. Call through, always.
+      const logger = server.config.logger;
+      const logError = logger.error.bind(logger);
+      logger.error = (msg, options) => {
+        logError(msg, options);
+        const err = options?.error as
+          | { id?: string; loc?: { file?: string }; plugin?: string; message?: string }
+          | null
+          | undefined;
+        if (err && (err.id || err.loc || err.plugin)) {
+          compile = {
+            state: 'error',
+            message: redact(tidy(clip(err.message ?? msg, MAX_MESSAGE_CHARS))),
+            file: tidy(err.loc?.file ?? err.id ?? '').replace(/\?.*$/, '') || undefined,
+            at: Date.now()
+          };
+        }
+      };
+
+      // With no browser connected there is no HMR update to say the error is gone, so when the
+      // file that failed changes, compile it again and record the outcome.
+      server.watcher.on('change', (changed) => {
+        if (compile.state !== 'error' || !compile.file || !changed.endsWith(compile.file)) return;
+        const failedFile = compile.file;
+        server.environments.client
+          .transformRequest(`/${failedFile}`)
+          .then(() => {
+            if (compile.state === 'error' && compile.file === failedFile)
+              compile = { state: 'ok', at: Date.now() };
+          })
+          .catch((error: unknown) => {
+            const message = error instanceof Error ? error.message : String(error);
+            compile = {
+              state: 'error',
+              message: redact(tidy(clip(message, MAX_MESSAGE_CHARS))),
+              file: failedFile,
+              at: Date.now()
+            };
+          });
+      });
+
+      // The server render runs in another thread (Nitro's dev worker) and asks this process for
+      // compiled modules through each server environment's fetchModule. A compile failure there
+      // never reaches the browser channel or the logger, so record it on the way back.
+      const recordCompileError = (error: unknown) => {
+        const err = error as { id?: string; loc?: { file?: string }; message?: string } | null;
+        if (!err || !(err.id || err.loc)) return;
+        compile = {
+          state: 'error',
+          message: redact(tidy(clip(err.message ?? 'Compile error', MAX_MESSAGE_CHARS))),
+          file: tidy(err.loc?.file ?? err.id ?? '').replace(/\?.*$/, '') || undefined,
+          at: Date.now()
+        };
+      };
+      for (const [name, environment] of Object.entries(server.environments)) {
+        if (name === 'client') continue;
+        const fetchModule = environment.fetchModule.bind(environment);
+        environment.fetchModule = (async (...args: Parameters<typeof fetchModule>) => {
+          try {
+            return await fetchModule(...args);
+          } catch (error) {
+            recordCompileError(error);
+            throw error;
+          }
+        }) as typeof environment.fetchModule;
+      }
+
+      // The worker's console reaches this process as forwarded stdout/stderr, which console
+      // wrapping in this thread cannot see. Scan only chunks that look like an error report.
+      // A config change restarts the server and runs this again, so the streams are wrapped once
+      // per process and always record into the current server's buffers.
+      const processState = globalThis as typeof globalThis & {
+        __forceyRecordOutput?: (text: string) => void;
+        __forceyStreamsWrapped?: boolean;
+      };
+      processState.__forceyRecordOutput = (text: string) => {
+        if (
+          !/\b(Error|TypeError|ReferenceError|SyntaxError)\b/.test(text) ||
+          text.includes('[vite]')
+        )
+          return;
+        const clean = tidy(text).trim();
+        buffers.add({
+          kind: 'server',
+          level: 'error',
+          message: redact(clip(clean.split('\n')[0] ?? clean, MAX_MESSAGE_CHARS)),
+          stack: redact(clip(clean, MAX_STACK_CHARS))
+        });
+      };
+      if (!processState.__forceyStreamsWrapped) {
+        processState.__forceyStreamsWrapped = true;
+        for (const stream of [process.stdout, process.stderr]) {
+          const write = stream.write.bind(stream) as (...args: unknown[]) => boolean;
+          stream.write = ((...args: unknown[]) => {
+            const chunk = args[0];
+            const text =
+              typeof chunk === 'string'
+                ? chunk
+                : chunk instanceof Uint8Array
+                  ? Buffer.from(chunk).toString('utf8')
+                  : '';
+            if (text) processState.__forceyRecordOutput?.(text);
+            return write(...args);
+          }) as typeof stream.write;
+        }
+      }
+
       const hot = server.ws;
       const send = hot.send.bind(hot) as (...args: unknown[]) => void;
       hot.send = ((...args: unknown[]) => {
@@ -202,31 +311,6 @@ export function forceyDev(): Plugin {
         }
         return send(...args);
       }) as typeof hot.send;
-
-      // Server-side errors (SSR render failures, loader exceptions) only reach the dev server's
-      // own console. Call through, always.
-      for (const level of ['error', 'warn'] as const) {
-        const original = console[level].bind(console);
-        console[level] = (...args: unknown[]) => {
-          original(...args);
-          const text = args
-            .map((a) =>
-              a instanceof Error
-                ? `${a.message}\n${a.stack ?? ''}`
-                : typeof a === 'string'
-                  ? a
-                  : JSON.stringify(a)
-            )
-            .join(' ');
-          const clean = tidy(text);
-          buffers.add({
-            kind: 'server',
-            level,
-            message: redact(clip(clean.split('\n')[0] ?? clean, MAX_MESSAGE_CHARS)),
-            stack: redact(clip(clean, MAX_STACK_CHARS))
-          });
-        };
-      }
 
       server.middlewares.use(ENDPOINT, async (req, res) => {
         res.setHeader('Content-Type', 'application/json');
