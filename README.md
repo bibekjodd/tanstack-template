@@ -110,7 +110,8 @@ actually works before wiring it into the main app.
 ```bash
 export MODAL_TOKEN_ID=ak-...
 export MODAL_TOKEN_SECRET=as-...
-npm run demo:sandbox
+npm install --no-save modal@0.10.0 tsx@4.23.13
+npx tsx scripts/demo-sandbox.ts
 ```
 
 Ctrl+C terminates the sandbox; otherwise it auto-terminates after 15 minutes.

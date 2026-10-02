@@ -20,7 +20,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build:modal-image
+      # The image build is the template's own tooling: its two dependencies are installed here,
+      # not listed in package.json, so they never reach a user's app.
+      - run: npm install --no-save modal@0.10.0 tsx@4.23.13
+      - run: npx tsx scripts/build-modal-image.ts
         env:
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
