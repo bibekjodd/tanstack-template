@@ -1,0 +1,46 @@
+/*
+  Keyframes and classes for the effect components in src/components/fx. Plain CSS, not Tailwind
+  theme additions, and a separate file linked from the root route: a project that rewrites
+  app.css (a theme import, a redesign) cannot break these animations. Every name starts with kit-
+  and every colour is a theme token.
+*/
+@import './kit-parts/a.css';
+@import './kit-parts/b.css';
+@import './kit-parts/c.css';
+@import './kit-parts/d.css';
+@import './kit-parts/e.css';
+
+/* Reveal / Enter (src/components/kit/reveal.tsx) */
+.kit-reveal[data-reveal='hidden'] {
+  opacity: 0;
+  transform: translateY(var(--kit-y, 18px));
+}
+.kit-reveal[data-reveal='shown'] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s ease var(--kit-delay, 0ms),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--kit-delay, 0ms);
+}
+.kit-enter {
+  animation: kit-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--kit-delay, 0ms) both;
+}
+@keyframes kit-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--kit-y, 18px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kit-reveal[data-reveal='hidden'] {
+    opacity: 1;
+    transform: none;
+  }
+  .kit-enter {
+    animation: none;
+  }
+}

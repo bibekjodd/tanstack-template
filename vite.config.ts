@@ -10,5 +10,11 @@ export default defineConfig({
     port: 3000,
     allowedHosts: true
   },
+  ssr: {
+    // react-tweet imports its own .css files, which Node's loader cannot read on the server: Vite
+    // has to process the package so the tweet card server-renders instead of falling back to the
+    // client.
+    noExternal: ['react-tweet']
+  },
   plugins: [tsconfigPaths(), tailwindcss(), tanstackStart(), viteReact(), nitro()]
 });

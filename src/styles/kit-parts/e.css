@@ -1,0 +1,81 @@
+/* Batch E: interaction and misc. */
+
+/* marquee: the root keeps --duration and --gap as Tailwind utilities so a className can override them. */
+@keyframes kit-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes kit-marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+.kit-marquee-track {
+  animation: kit-marquee var(--duration) linear infinite;
+}
+
+.kit-marquee-track-vertical {
+  animation-name: kit-marquee-vertical;
+}
+
+.kit-marquee-track-reverse {
+  animation-direction: reverse;
+}
+
+.kit-marquee-pausable:hover .kit-marquee-track,
+.kit-marquee-pausable:focus-within .kit-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-marquee {
+    overflow: auto;
+  }
+
+  .kit-marquee-track {
+    animation: none;
+  }
+
+  /* The repeated copies only exist to make the loop seamless: show the content once. */
+  .kit-marquee-track[aria-hidden='true'] {
+    display: none;
+  }
+}
+
+/* pointer and smooth-cursor: hide the system cursor, but never over text fields. */
+.kit-pointer-host {
+  cursor: none;
+}
+
+.kit-pointer-host :is(input, textarea, select, [contenteditable='true']) {
+  cursor: auto;
+}
+
+.kit-cursor-hidden :not(input, textarea, select, [contenteditable='true']) {
+  cursor: none;
+}
+
+/* animated-theme-toggler: the circle (or other shape) is animated from JS on the new snapshot. */
+:root[data-kit-theme-vt='active']::view-transition-old(root),
+:root[data-kit-theme-vt='active']::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-kit-theme-vt='active']::view-transition-group(root) {
+  animation-duration: var(--kit-theme-vt-duration, 400ms);
+}
+
+/* Pinned so Firefox does not paint the new theme unclipped before the JS animation starts. */
+:root[data-kit-theme-vt='active']::view-transition-new(root) {
+  clip-path: var(--kit-theme-vt-clip-from);
+}

@@ -1,0 +1,92 @@
+/* Batch B: text effects. */
+
+@keyframes kit-line-shadow-text {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% -100%;
+  }
+}
+
+.kit-line-shadow-text::after {
+  animation: kit-line-shadow-text 15s linear infinite;
+}
+
+@keyframes kit-aurora-text {
+  0% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);
+  }
+  25% {
+    background-position: 50% 100%;
+    transform: rotate(5deg) scale(1.1);
+  }
+  50% {
+    background-position: 100% 50%;
+    transform: rotate(-3deg) scale(0.95);
+  }
+  75% {
+    background-position: 50% 0%;
+    transform: rotate(3deg) scale(1.05);
+  }
+  100% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);
+  }
+}
+
+.kit-aurora-text {
+  animation: kit-aurora-text 8s ease-in-out infinite alternate;
+}
+
+@keyframes kit-shiny-text {
+  0%,
+  90%,
+  100% {
+    background-position: calc(-100% - var(--shiny-width)) 0;
+  }
+  30%,
+  60% {
+    background-position: calc(100% + var(--shiny-width)) 0;
+  }
+}
+
+.kit-shiny-text {
+  animation: kit-shiny-text 8s infinite;
+}
+
+@keyframes kit-gradient-text {
+  to {
+    background-position: var(--bg-size, 300%) 0;
+  }
+}
+
+.kit-gradient-text {
+  animation: kit-gradient-text 8s linear infinite;
+}
+
+@keyframes kit-blink-cursor {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.kit-blink-cursor {
+  animation: kit-blink-cursor 1.2s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-line-shadow-text::after,
+  .kit-aurora-text,
+  .kit-shiny-text,
+  .kit-gradient-text,
+  .kit-blink-cursor {
+    animation: none;
+  }
+}

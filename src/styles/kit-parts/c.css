@@ -1,0 +1,206 @@
+/* Batch C: cards, borders and buttons */
+
+@keyframes kit-neon-card-spin {
+  0% {
+    background-position: top center;
+  }
+  100% {
+    background-position: bottom center;
+  }
+}
+
+.kit-neon-card::before,
+.kit-neon-card::after {
+  animation: kit-neon-card-spin 3000ms infinite alternate;
+}
+
+@keyframes kit-shine-border {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.kit-shine-border {
+  animation: kit-shine-border var(--duration, 14s) infinite linear;
+}
+
+@keyframes kit-shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+
+@keyframes kit-shimmer-spin {
+  0% {
+    transform: translateZ(0) rotate(0);
+  }
+  15%,
+  35% {
+    transform: translateZ(0) rotate(90deg);
+  }
+  65%,
+  85% {
+    transform: translateZ(0) rotate(270deg);
+  }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+  }
+}
+
+.kit-shimmer-slide {
+  animation: kit-shimmer-slide var(--speed, 3s) ease-in-out infinite alternate;
+}
+
+.kit-shimmer-spin {
+  animation: kit-shimmer-spin calc(var(--speed, 3s) * 2) infinite linear;
+}
+
+@keyframes kit-rainbow {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 200%;
+  }
+}
+
+.kit-rainbow {
+  --kit-rainbow-gradient: linear-gradient(
+    90deg,
+    var(--chart-1),
+    var(--chart-5),
+    var(--chart-3),
+    var(--chart-4),
+    var(--chart-2)
+  );
+  position: relative;
+  animation: kit-rainbow var(--speed, 2s) infinite linear;
+}
+
+.kit-rainbow::before {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 50%;
+  z-index: 0;
+  height: 20%;
+  width: 60%;
+  transform: translateX(-50%);
+  background: var(--kit-rainbow-gradient);
+  background-size: 200%;
+  filter: blur(0.75rem);
+  animation: kit-rainbow var(--speed, 2s) infinite linear;
+}
+
+.kit-rainbow-default {
+  border: 2px solid transparent;
+  color: var(--background);
+  background:
+    linear-gradient(var(--foreground), var(--foreground)),
+    linear-gradient(
+      var(--foreground) 50%,
+      color-mix(in oklab, var(--foreground) 60%, transparent) 80%,
+      transparent
+    ),
+    var(--kit-rainbow-gradient);
+  background-size: 200%;
+  background-clip: padding-box, border-box, border-box;
+  background-origin: border-box;
+}
+
+.kit-rainbow-outline {
+  border: 1px solid var(--input);
+  border-bottom-color: transparent;
+  color: var(--foreground);
+  background:
+    linear-gradient(var(--background), var(--background)),
+    linear-gradient(
+      var(--background) 50%,
+      color-mix(in oklab, var(--foreground) 20%, transparent) 80%,
+      transparent
+    ),
+    var(--kit-rainbow-gradient);
+  background-size: 200%;
+  background-clip: padding-box, border-box, border-box;
+  background-origin: border-box;
+}
+
+@keyframes kit-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--pulse-color, color-mix(in oklab, var(--bg) 50%, transparent));
+  }
+  50% {
+    box-shadow: 0 0 0 var(--distance)
+      var(--pulse-color, color-mix(in oklab, var(--bg) 50%, transparent));
+  }
+}
+
+@keyframes kit-pulse-ripple {
+  0% {
+    box-shadow: 0 0 0 0 var(--pulse-color, var(--bg));
+  }
+  100% {
+    box-shadow: 0 0 0 var(--distance)
+      color-mix(in oklab, var(--pulse-color, var(--bg)) 0%, transparent);
+  }
+}
+
+.kit-pulse {
+  animation: kit-pulse var(--duration) ease-out infinite;
+}
+
+.kit-pulse-ripple {
+  animation: kit-pulse-ripple var(--duration) cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes kit-ripple {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.kit-ripple {
+  animation: kit-ripple var(--duration) ease-out;
+}
+
+@keyframes kit-orbit {
+  0% {
+    transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * 1px))
+      rotate(calc(var(--angle) * -1deg));
+  }
+  100% {
+    transform: rotate(calc(var(--angle) * 1deg + 360deg)) translateY(calc(var(--radius) * 1px))
+      rotate(calc((var(--angle) * -1deg) - 360deg));
+  }
+}
+
+.kit-orbit {
+  animation: kit-orbit calc(var(--duration) * 1s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-neon-card::before,
+  .kit-neon-card::after,
+  .kit-shine-border,
+  .kit-shimmer-slide,
+  .kit-shimmer-spin,
+  .kit-rainbow,
+  .kit-rainbow::before,
+  .kit-pulse,
+  .kit-pulse-ripple,
+  .kit-ripple,
+  .kit-orbit {
+    animation: none;
+  }
+}
