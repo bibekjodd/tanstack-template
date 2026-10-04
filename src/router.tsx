@@ -1,7 +1,7 @@
+import { PendingState } from '@/components/kit/route-states';
 import { QueryClient } from '@tanstack/react-query';
 import { createRouter as createTanstackRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
-import { PendingState } from '@/components/kit/route-states';
 import { routeTree } from './routeTree.gen';
 
 export function getRouter() {

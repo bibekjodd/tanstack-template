@@ -1,15 +1,7 @@
 /*
-  Keyframes and classes for the effect components in src/components/fx. Plain CSS, not Tailwind
-  theme additions, and a separate file linked from the root route: a project that rewrites
-  app.css (a theme import, a redesign) cannot break these animations. Every name starts with kit-
-  and every colour is a theme token.
+  Keyframes and classes for Reveal and Enter (src/components/kit/reveal.tsx). A separate file linked
+  from the root route: a project that rewrites app.css (a theme import, a redesign) cannot break them.
 */
-@import './kit-parts/a.css';
-@import './kit-parts/b.css';
-@import './kit-parts/c.css';
-@import './kit-parts/d.css';
-@import './kit-parts/e.css';
-
 /* Reveal / Enter (src/components/kit/reveal.tsx) */
 .kit-reveal[data-reveal='hidden'] {
   opacity: 0;

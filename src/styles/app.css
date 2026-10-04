@@ -8,7 +8,7 @@
 
 /*
   Fonts are self-hosted through Fontsource, so there is no render-blocking request to a font CDN.
-  The families listed in src/components/CATALOGUE.md ("Fonts") are installed: import the ones a
+  The families listed in src/components/KIT.md ("Fonts") are installed: import the ones a
   project uses (@import '@fontsource-variable/<name>';) above, then point --font-sans and
   --font-heading at them in @theme.
 */

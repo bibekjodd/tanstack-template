@@ -20,5 +20,3 @@ jobs:
       - name: Typecheck .forcey (platform dev tooling)
         run: npx tsc -p .forcey --noEmit
       - run: npm run lint
-      - name: Component catalogue is current
-        run: npm run catalogue:check

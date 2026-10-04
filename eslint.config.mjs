@@ -127,11 +127,6 @@ export default defineConfig([
     }
   },
   {
-    // Node scripts (the catalogue builder) run outside the browser bundle.
-    files: ['scripts/**/*.mjs'],
-    languageOptions: { globals: { console: 'readonly', process: 'readonly', URL: 'readonly' } }
-  },
-  {
     files: ['src/components/ui/**'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
