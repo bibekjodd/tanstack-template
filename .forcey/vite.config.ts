@@ -4,7 +4,6 @@
 // project. Works whether the project exports a config object or a config function.
 import { defineConfig, mergeConfig, type ConfigEnv, type UserConfig } from 'vite';
 import projectConfig from '../vite.config';
-import { forceyCompress } from './forcey-compress';
 import { forceyDev } from './forcey-dev';
 import { forceyTagger } from './forcey-tagger';
 
@@ -18,7 +17,7 @@ export default defineConfig(async (env) => {
   return mergeConfig(
     { ...base, plugins: [forceyTagger(), ...(base.plugins ?? [])] },
     {
-      plugins: [forceyCompress(), forceyDev()]
+      plugins: [forceyDev()]
     }
   );
 });
