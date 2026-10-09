@@ -51,6 +51,9 @@ const compress: Connect.NextHandleFunction = (req, res, next) => {
   // Decided on the first write or end, when Vite has set every header it is going to set.
   const decide = () => {
     decided = true;
+    // Streamed static files (public/) call writeHead before their first write: too late to add
+    // Content-Encoding, and setHeader would throw and take the dev server down with it.
+    if (res.headersSent) return;
     const type = String(res.getHeader('content-type') ?? '');
     if (!COMPRESSIBLE.test(type) || res.getHeader('content-encoding')) return;
     addVary(res);
@@ -67,6 +70,9 @@ const compress: Connect.NextHandleFunction = (req, res, next) => {
     res.setHeader('Content-Encoding', encoding);
     sink.on('data', (chunk: Buffer) => {
       rawWrite(chunk);
+    });
+    sink.on('error', () => {
+      res.destroy();
     });
     sink.on('end', () => {
       rawEnd();
