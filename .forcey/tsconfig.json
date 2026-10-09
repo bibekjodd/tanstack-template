@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "include": [
+    "./forcey-compress.ts",
     "./forcey-dev.ts",
     "./dev-agent.ts",
     "./forcey-tagger.ts",
