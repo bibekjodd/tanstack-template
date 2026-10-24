@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import unusedImports from 'eslint-plugin-unused-imports';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
@@ -27,12 +28,19 @@ export default defineConfig([
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      'jsx-a11y': jsxA11y
+      'jsx-a11y': jsxA11y,
+      'unused-imports': unusedImports
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      '@typescript-eslint/no-unused-vars': 'error',
+      // An unused import is removed by eslint --fix; an unused variable is still reported.
+      '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'error',
+        { vars: 'all', args: 'after-used', caughtErrors: 'all' }
+      ],
       '@typescript-eslint/consistent-type-imports': 'error',
       'jsx-a11y/alt-text': 'error',
       // This is TanStack Start. Next.js code type-checks poorly and renders nothing here, so fail
@@ -120,7 +128,8 @@ export default defineConfig([
         },
         {
           // A string that is exactly a hex colour: a default prop, a palette array, a config object.
-          selector: `Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]`,
+          // An in-page link (href="#cafe", to="#deed") is a fragment, not a colour.
+          selector: `Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]:not(JSXAttribute[name.name=/^(href|to|hash)$/] > Literal, Property[key.name=/^(href|to|hash)$/] > Literal)`,
           message: TOKEN_MESSAGE
         }
       ]
@@ -129,7 +138,7 @@ export default defineConfig([
   {
     files: ['src/components/ui/**'],
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-vars': 'off',
       'react-refresh/only-export-components': 'off'
     }
   }

@@ -9,23 +9,11 @@ site you are building; nothing here is a page or a style you have to adopt.
 - **`seo({ title, description })`** (`@/lib/seo`): the head of a page. Give every route its own `head()`, and set `SITE` once in `src/lib/seo.ts`.
 - **`useTheme()`** (`@/lib/use-theme`): `{ theme: 'light' | 'dark', setTheme, toggle }` for a theme switch.
 - **Colour comes from tokens** in `src/styles/app.css` (`bg-background`, `text-foreground`, `bg-primary`, `border-border`, `bg-scrim` / `text-on-scrim` over photos, `chart-1` … `chart-5` for accents). Set the palette once, light and dark. The linter rejects literal colours in `src/components` and `src/routes`.
+- **Shadows, display type and motion are tokens too**: `shadow-xs` … `shadow-xl`, `text-display` for the hero headline and `text-display-sm` for section titles (size, line height, tracking and weight in one class), `ease-brand` for transitions, and `bg-(image:--gradient-scrim)` behind text laid over a photo. A design direction sets their values.
 - **Fonts are self-hosted.** Add `@import '@fontsource-variable/<name>';` at the top of `src/styles/app.css` for each family used (all listed below are installed), then set `--font-sans` and `--font-heading` in `@theme`. No Google Fonts link is needed.
 
 ## Fonts (installed)
 
 Variable families (`@fontsource-variable/<name>`): fraunces, playfair-display, cormorant-garamond, newsreader, bricolage-grotesque, syne, unbounded, outfit, sora, familjen-grotesk, geist, inter, dm-sans, hanken-grotesk, instrument-sans, jost, nunito, figtree, manrope, plus-jakarta-sans, geist-mono, jetbrains-mono. Static: `@fontsource/instrument-serif`, `@fontsource/dm-serif-display`. CSS family names are the title-cased name with " Variable" (for example `'Fraunces Variable'`); the two static ones are `'Instrument Serif'` and `'DM Serif Display'`.
 
-| Feel                  | Heading             | Body                   | Packages                                        |
-| --------------------- | ------------------- | ---------------------- | ----------------------------------------------- |
-| Editorial, warm       | Fraunces            | Hanken Grotesk         | fraunces, hanken-grotesk                        |
-| Luxury, fashion       | Cormorant Garamond  | Jost                   | cormorant-garamond, jost                        |
-| Modern product        | Geist               | Geist                  | geist (already imported), geist-mono            |
-| Friendly SaaS         | Bricolage Grotesque | Instrument Sans        | bricolage-grotesque, instrument-sans            |
-| Magazine, long reads  | Newsreader          | Inter                  | newsreader, inter                               |
-| Bold agency           | Syne                | DM Sans                | syne, dm-sans                                   |
-| Tech, developer       | Sora                | Inter + JetBrains Mono | sora, inter, jetbrains-mono                     |
-| Craft, food, boutique | DM Serif Display    | Figtree                | @fontsource/dm-serif-display, figtree           |
-| Playful               | Unbounded           | Nunito                 | unbounded, nunito                               |
-| Fintech, clean        | Manrope             | Inter                  | manrope, inter                                  |
-| Elegant, minimal      | Instrument Serif    | Plus Jakarta Sans      | @fontsource/instrument-serif, plus-jakarta-sans |
-| Geometric             | Outfit              | Familjen Grotesk       | outfit, familjen-grotesk                        |
+Choose fonts for this app, not from a fixed pairing: when the build has a design direction, its fonts are already applied; otherwise pick a heading face with character and a readable body face that fit this request.

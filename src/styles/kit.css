@@ -12,10 +12,11 @@
   transform: none;
   transition:
     opacity 0.6s ease var(--kit-delay, 0ms),
-    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--kit-delay, 0ms);
+    transform 0.6s var(--ease-brand, cubic-bezier(0.22, 1, 0.36, 1)) var(--kit-delay, 0ms);
 }
 .kit-enter {
-  animation: kit-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--kit-delay, 0ms) both;
+  animation: kit-enter 0.7s var(--ease-brand, cubic-bezier(0.22, 1, 0.36, 1)) var(--kit-delay, 0ms)
+    both;
 }
 @keyframes kit-enter {
   from {

@@ -24,6 +24,33 @@
   --radius-xl: 0.875rem;
 }
 
+/*
+  Shadows (shadow-xs … shadow-xl), display type for headlines (text-display, text-display-sm), the
+  easing for motion (ease-brand, also used by Reveal and Enter) and a scrim for text over a photo
+  (bg-(image:--gradient-scrim)). A design direction rewrites these values. `static` keeps them as
+  CSS variables even where no utility uses them.
+*/
+@theme static {
+  --shadow-xs: 0 1px 2px 0 oklch(14% 0.01 70 / 0.06);
+  --shadow-sm: 0 1px 3px 0 oklch(14% 0.01 70 / 0.08), 0 1px 2px -1px oklch(14% 0.01 70 / 0.08);
+  --shadow-md: 0 4px 12px -2px oklch(14% 0.01 70 / 0.1), 0 2px 4px -2px oklch(14% 0.01 70 / 0.08);
+  --shadow-lg: 0 12px 28px -6px oklch(14% 0.01 70 / 0.14), 0 4px 8px -4px oklch(14% 0.01 70 / 0.08);
+  --shadow-xl: 0 24px 48px -12px oklch(14% 0.01 70 / 0.2);
+
+  --text-display: clamp(2.5rem, 1.5rem + 4.5vw, 5rem);
+  --text-display--line-height: 1.04;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 600;
+  --text-display-sm: clamp(1.875rem, 1.25rem + 2.5vw, 3.25rem);
+  --text-display-sm--line-height: 1.1;
+  --text-display-sm--letter-spacing: -0.015em;
+  --text-display-sm--font-weight: 600;
+
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --gradient-scrim: linear-gradient(to top, oklch(14% 0.01 70 / 0.78), oklch(14% 0.01 70 / 0) 72%);
+}
+
 :root {
   --background: oklch(98.5% 0.004 85);
   --surface: oklch(100% 0 0);
