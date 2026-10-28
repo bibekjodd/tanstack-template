@@ -5,6 +5,7 @@
 import { defineConfig, mergeConfig, type ConfigEnv, type UserConfig } from 'vite';
 import projectConfig from '../vite.config';
 import { forceyDev } from './forcey-dev';
+import { forceyPreload } from './forcey-preload';
 import { forceyTagger } from './forcey-tagger';
 
 type ProjectConfig = UserConfig | ((env: ConfigEnv) => UserConfig | Promise<UserConfig>);
@@ -17,7 +18,7 @@ export default defineConfig(async (env) => {
   return mergeConfig(
     { ...base, plugins: [forceyTagger(), ...(base.plugins ?? [])] },
     {
-      plugins: [forceyDev()]
+      plugins: [forceyDev(), forceyPreload()]
     }
   );
 });
