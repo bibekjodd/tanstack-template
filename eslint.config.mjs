@@ -34,15 +34,17 @@ export default defineConfig([
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      // An unused import is removed by eslint --fix; an unused variable is still reported.
+      // An unused import is removed by eslint --fix. An unused variable or a missing alt is only a
+      // warning: the platform's checks act on errors (a crash, a blank page, wrong code), and a
+      // warning never sends the agent into a fix cycle.
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
-        'error',
+        'warn',
         { vars: 'all', args: 'after-used', caughtErrors: 'all' }
       ],
       '@typescript-eslint/consistent-type-imports': 'error',
-      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/alt-text': 'warn',
       // This is TanStack Start. Next.js code type-checks poorly and renders nothing here, so fail
       // it at lint time with the replacement in the message.
       'no-restricted-imports': [
