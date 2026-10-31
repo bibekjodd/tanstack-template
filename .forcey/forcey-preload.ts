@@ -12,7 +12,9 @@
 //
 // Platform code, like the rest of .forcey/: never synced into a project, exported or deployed, and
 // inert in production builds (`apply: 'serve'`).
+import { existsSync } from 'node:fs';
 import type { ServerResponse } from 'node:http';
+import { join } from 'node:path';
 import type { Connect, Plugin, ViteDevServer } from 'vite';
 
 const MAX_LINKS = 300;
@@ -80,9 +82,23 @@ export function forceyPreload(): Plugin {
     return `${path}?${[`t=${stamp}`, ...rest].join('&')}`;
   };
 
+  // A source file renamed or deleted since the last load, or a dependency chunk from before the
+  // last re-optimization (its ?v= is an older browser hash), would only fail: left out, and
+  // forgotten.
+  const stillServed = (url: string, server: ViteDevServer): boolean => {
+    if (url.includes('/node_modules/.vite/deps/')) {
+      const hash = server.environments.client.depsOptimizer?.metadata.browserHash;
+      const version = /[?&]v=([^&]+)/.exec(url)?.[1];
+      return !hash || !version || version === hash;
+    }
+    if (url.startsWith('/src/')) return existsSync(join(server.config.root, pathOf(url)));
+    return true;
+  };
+
   const linksFor = (page: string, server: ViteDevServer): string => {
     const scripts = pages.get(page);
     if (!scripts || scripts.size === 0) return '';
+    for (const [key, url] of scripts) if (!stillServed(url, server)) scripts.delete(key);
     return [...scripts.values()]
       .map((url) => `<link rel="modulepreload" href="${escapeAttribute(currentUrl(url, server))}">`)
       .join('');
