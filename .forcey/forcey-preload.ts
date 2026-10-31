@@ -49,12 +49,20 @@ export function forceyPreload(): Plugin {
   const pages = new Map<string, PageScripts>();
   let current: { page: string; at: number } | null = null;
 
-  const record = (url: string) => {
-    if (!current || Date.now() - current.at > RECORD_WINDOW_MS) return;
-    let scripts = pages.get(current.page);
+  // Kept only once it was served: a script that failed is dropped instead, so a stale URL is
+  // preloaded at most once. A dependency chunk from before Vite's last re-optimization has its
+  // own hashed name (react-BwMsB7H7.js), so a newer one never replaces it; the dev server answers
+  // it 504 "Outdated Optimize Dep" and it would otherwise be asked for on every load.
+  const record = (url: string, status: number, page: { page: string; at: number } | null) => {
+    if (!page || Date.now() - page.at > RECORD_WINDOW_MS) return;
+    let scripts = pages.get(page.page);
+    if (status >= 400) {
+      scripts?.delete(moduleKey(url));
+      return;
+    }
     if (!scripts) {
       scripts = new Map();
-      pages.set(current.page, scripts);
+      pages.set(page.page, scripts);
       if (pages.size > MAX_PAGES) pages.delete(pages.keys().next().value!);
     }
     if (scripts.size < MAX_LINKS || scripts.has(moduleKey(url))) scripts.set(moduleKey(url), url);
@@ -172,7 +180,8 @@ export function forceyPreload(): Plugin {
       const handle: Connect.NextHandleFunction = (req, res, next) => {
         const url = req.url ?? '/';
         if (isScript(req)) {
-          record(url);
+          const page = current;
+          res.on('finish', () => record(url, res.statusCode, page));
         } else if (isDocument(req)) {
           const page = pathOf(url);
           current = { page, at: Date.now() };
