@@ -50,7 +50,6 @@ const SECRET_PATTERNS: [RegExp, string][] = [
   ]
 ];
 // Terminal colour codes mean nothing to a reader of the snapshot.
-// eslint-disable-next-line no-control-regex
 const stripAnsi = (text: string) => text.replace(/\u001b\[[0-9;]*m/g, '');
 
 export const redact = (text: string): string =>

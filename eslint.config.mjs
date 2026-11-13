@@ -19,10 +19,75 @@ const COLOR_FUNCTION_OR_HEX = '^\\s*(?:#[0-9a-fA-F]{3,8}|(?:rgb|rgba|hsl|hsla)\\
 const TOKEN_MESSAGE =
   'Use a theme token instead of a literal colour: bg-background, text-foreground, bg-primary, text-primary-foreground, border-border, text-muted-foreground, bg-scrim / text-on-scrim over images, var(--chart-1) for an accent. Add a token in src/styles/app.css if none fits.';
 
+// The platform acts on lint errors (it sends the agent to fix them) and ignores warnings. Rules
+// from the recommended sets that flag style or taste, never a broken app, are warnings or off, so
+// the agent never spends a turn on them. Errors stay for what crashes, misbehaves at runtime or
+// cannot work in TanStack Start: hooks called conditionally, an unsafe optional chain, a
+// duplicate case, an invalid regex, a next/* import, "use client", and literal colours (the
+// design rule, plans/36).
+const OFF = [
+  '@typescript-eslint/no-explicit-any',
+  '@typescript-eslint/ban-ts-comment',
+  '@typescript-eslint/no-empty-object-type',
+  '@typescript-eslint/no-namespace',
+  '@typescript-eslint/no-this-alias',
+  '@typescript-eslint/no-unnecessary-type-constraint',
+  '@typescript-eslint/no-unsafe-function-type',
+  '@typescript-eslint/prefer-namespace-keyword',
+  '@typescript-eslint/triple-slash-reference',
+  'no-control-regex',
+  'no-extra-boolean-cast',
+  'no-prototype-builtins',
+  'no-regex-spaces',
+  'no-useless-catch',
+  'no-useless-escape',
+  'prefer-rest-params',
+  'prefer-spread'
+];
+const WARN = [
+  '@typescript-eslint/consistent-type-imports',
+  '@typescript-eslint/no-array-constructor',
+  '@typescript-eslint/no-extra-non-null-assertion',
+  '@typescript-eslint/no-non-null-asserted-optional-chain',
+  '@typescript-eslint/no-require-imports',
+  '@typescript-eslint/no-unused-expressions',
+  '@typescript-eslint/no-wrapper-object-types',
+  '@typescript-eslint/prefer-as-const',
+  'no-async-promise-executor',
+  'no-case-declarations',
+  'no-compare-neg-zero',
+  'no-cond-assign',
+  'no-constant-binary-expression',
+  'no-constant-condition',
+  'no-debugger',
+  'no-empty',
+  'no-empty-character-class',
+  'no-empty-pattern',
+  'no-empty-static-block',
+  'no-fallthrough',
+  'no-irregular-whitespace',
+  'no-misleading-character-class',
+  'no-nonoctal-decimal-escape',
+  'no-octal',
+  'no-self-assign',
+  'no-sparse-arrays',
+  'no-unused-labels',
+  'no-unused-private-class-members',
+  'no-useless-backreference',
+  'no-var',
+  'prefer-const'
+];
+
 export default defineConfig([
   globalIgnores(['.output/**', 'dist/**', 'node_modules/**', 'src/routeTree.gen.ts']),
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    rules: {
+      ...Object.fromEntries(OFF.map((rule) => [rule, 'off'])),
+      ...Object.fromEntries(WARN.map((rule) => [rule, 'warn']))
+    }
+  },
   {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: {
@@ -34,16 +99,16 @@ export default defineConfig([
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      // An unused import is removed by eslint --fix. An unused variable or a missing alt is only a
-      // warning: the platform's checks act on errors (a crash, a blank page, wrong code), and a
-      // warning never sends the agent into a fix cycle.
+      // Unused imports, unused variables and a missing alt are warnings: the platform's checks act
+      // on errors (a crash, a blank page, wrong code), and a warning never sends the agent into a
+      // fix cycle. The platform's own eslint --fix still removes unused imports and type imports.
       '@typescript-eslint/no-unused-vars': 'off',
-      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-imports': 'warn',
       'unused-imports/no-unused-vars': [
         'warn',
         { vars: 'all', args: 'after-used', caughtErrors: 'all' }
       ],
-      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/consistent-type-imports': 'warn',
       'jsx-a11y/alt-text': 'warn',
       // This is TanStack Start. Next.js code type-checks poorly and renders nothing here, so fail
       // it at lint time with the replacement in the message.
