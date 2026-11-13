@@ -28,8 +28,8 @@ src/
     ui/            shadcn on Base UI (50 primitives)
     kit/           Photo, Reveal/Enter, and the route error/not-found/pending screens
     KIT.md         the project helpers and the installed fonts with pairings (the agent reads this)
-  lib/             utils (cn), seo (head helper), use-theme, css-color, theme-script, constants
-  styles/          app.css (design tokens, light + dark), kit.css (keyframes for Reveal/Enter)
+  lib/             utils (cn), seo (head helper), css-color, constants
+  styles/          app.css (design tokens, one light theme), kit.css (keyframes for Reveal/Enter)
 public/            favicon.svg, og.png (default share picture), robots.txt
 ```
 
@@ -44,7 +44,7 @@ scored no better; see `plans/26-agent-quality.md` in the main monorepo).
 
 - **Tokens only.** Components take their colours from the tokens in `app.css` (`bg-background`,
   `text-primary-foreground`, `bg-scrim` over photos, `--chart-1..5` for accents). A project changes
-  its look by editing the token values, including dark mode. ESLint rejects literal colours
+  its look by editing the token values. ESLint rejects literal colours
   (`text-white`, `bg-[#fff]`, hex strings, SVG `fill="#..."`) under `src/components` and `src/routes`.
 - **Server-render safe.** `Reveal` is visible in the server HTML and only hides content below the
   fold after hydration; `Enter` is CSS-only. Neither can leave a page blank if scripts are slow.
@@ -62,12 +62,10 @@ nothing in them appears on a route until it is imported.
 
 ## Design tokens
 
-Every color is a CSS custom property defined once in `src/styles/app.css`, redefined only inside
-the dark-mode blocks. Components reference tokens (`bg-surface`, `text-muted-foreground`, ...)
-exclusively — no literal colors, no `text-white`, no hex codes outside `app.css` itself. Dark mode
-follows system preference by default and can be pinned by toggling a `.dark`/`.light` class on
-`<html>`; the inline script in `routes/__root.tsx` (`lib/theme-script.ts`) applies it before first
-paint to avoid a flash.
+Every color is a CSS custom property defined once in `src/styles/app.css`. Components reference tokens (`bg-surface`, `text-muted-foreground`, ...)
+exclusively — no literal colors, no `text-white`, no hex codes outside `app.css` itself. There is
+one theme, light (`color-scheme: light`): no dark-mode blocks, no theme script and no theme switch.
+The shadcn components' `dark:` utilities apply only under a `.dark` class, which nothing sets.
 
 ## Commands
 

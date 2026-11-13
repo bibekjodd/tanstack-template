@@ -4,6 +4,10 @@
 @import '@fontsource-variable/geist';
 @import '@fontsource-variable/geist-mono';
 
+/*
+  The template has one theme, light. `dark:` utilities (in the shadcn components) apply only under a
+  .dark class, which nothing sets; without this line they would follow the visitor's OS setting.
+*/
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
@@ -52,6 +56,8 @@
 }
 
 :root {
+  color-scheme: light;
+
   --background: oklch(98.5% 0.004 85);
   --surface: oklch(100% 0 0);
   --surface-hover: oklch(96.5% 0.006 85);
@@ -99,104 +105,6 @@
   --chart-5: oklch(55% 0.1 255);
 
   --radius: var(--radius-lg);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --background: oklch(17% 0.01 70);
-    --surface: oklch(21% 0.011 70);
-    --surface-hover: oklch(25% 0.012 70);
-    --foreground: oklch(96% 0.005 85);
-    --muted: oklch(25% 0.012 70);
-    --muted-foreground: oklch(70% 0.012 80);
-    --border: oklch(31% 0.013 70);
-    --input: oklch(31% 0.013 70);
-    --ring: oklch(68% 0.13 48);
-
-    --primary: oklch(94% 0.01 85);
-    --primary-foreground: oklch(20% 0.012 70);
-    --secondary: oklch(27% 0.012 70);
-    --secondary-foreground: oklch(96% 0.005 85);
-    --accent: oklch(30% 0.03 60);
-    --accent-foreground: oklch(96% 0.005 85);
-    --destructive: oklch(65% 0.2 25);
-    --destructive-foreground: oklch(15% 0.01 70);
-    --success: oklch(65% 0.15 145);
-    --success-foreground: oklch(15% 0.01 70);
-    --warning: oklch(78% 0.16 80);
-    --warning-foreground: oklch(15% 0.02 80);
-
-    --card: oklch(21% 0.011 70);
-    --card-foreground: oklch(96% 0.005 85);
-    --popover: oklch(21% 0.011 70);
-    --popover-foreground: oklch(96% 0.005 85);
-
-    --scrim: oklch(14% 0.01 70);
-    --on-scrim: oklch(98% 0.004 85);
-
-    --sidebar: oklch(19% 0.01 70);
-    --sidebar-foreground: oklch(96% 0.005 85);
-    --sidebar-primary: oklch(94% 0.01 85);
-    --sidebar-primary-foreground: oklch(20% 0.012 70);
-    --sidebar-accent: oklch(30% 0.03 60);
-    --sidebar-accent-foreground: oklch(96% 0.005 85);
-    --sidebar-border: oklch(31% 0.013 70);
-    --sidebar-ring: oklch(68% 0.13 48);
-
-    --chart-1: oklch(70% 0.15 45);
-    --chart-2: oklch(70% 0.09 195);
-    --chart-3: oklch(80% 0.13 85);
-    --chart-4: oklch(68% 0.13 330);
-    --chart-5: oklch(68% 0.1 255);
-  }
-}
-
-:root.dark {
-  --background: oklch(17% 0.01 70);
-  --surface: oklch(21% 0.011 70);
-  --surface-hover: oklch(25% 0.012 70);
-  --foreground: oklch(96% 0.005 85);
-  --muted: oklch(25% 0.012 70);
-  --muted-foreground: oklch(70% 0.012 80);
-  --border: oklch(31% 0.013 70);
-  --input: oklch(31% 0.013 70);
-  --ring: oklch(68% 0.13 48);
-
-  --primary: oklch(94% 0.01 85);
-  --primary-foreground: oklch(20% 0.012 70);
-  --secondary: oklch(27% 0.012 70);
-  --secondary-foreground: oklch(96% 0.005 85);
-  --accent: oklch(30% 0.03 60);
-  --accent-foreground: oklch(96% 0.005 85);
-  --destructive: oklch(65% 0.2 25);
-  --destructive-foreground: oklch(15% 0.01 70);
-  --success: oklch(65% 0.15 145);
-  --success-foreground: oklch(15% 0.01 70);
-  --warning: oklch(78% 0.16 80);
-  --warning-foreground: oklch(15% 0.02 80);
-
-  --card: oklch(21% 0.011 70);
-  --card-foreground: oklch(96% 0.005 85);
-  --popover: oklch(21% 0.011 70);
-  --popover-foreground: oklch(96% 0.005 85);
-
-  --scrim: oklch(14% 0.01 70);
-  --on-scrim: oklch(98% 0.004 85);
-
-  --sidebar: oklch(19% 0.01 70);
-  --sidebar-foreground: oklch(96% 0.005 85);
-  --sidebar-primary: oklch(94% 0.01 85);
-  --sidebar-primary-foreground: oklch(20% 0.012 70);
-  --sidebar-accent: oklch(30% 0.03 60);
-  --sidebar-accent-foreground: oklch(96% 0.005 85);
-  --sidebar-border: oklch(31% 0.013 70);
-  --sidebar-ring: oklch(68% 0.13 48);
-
-  --chart-1: oklch(70% 0.15 45);
-  --chart-2: oklch(70% 0.09 195);
-  --chart-3: oklch(80% 0.13 85);
-  --chart-4: oklch(68% 0.13 330);
-  --chart-5: oklch(68% 0.1 255);
 }
 
 @theme inline {
